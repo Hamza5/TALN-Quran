@@ -1,0 +1,7 @@
+# Ignore everything
+*
+# Except
+!*.py
+!*.txt
+!Quran Translations
+!Quran Translations/*.txt
