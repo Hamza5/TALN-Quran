@@ -65,8 +65,18 @@ quran_buckwalter_reversed_scheme = dict((v, k) for (k, v) in quran_buckwalter_sc
 
 
 def transliterate_to_arabic(quran_text):
-    return ''.join(quran_buckwalter_scheme[l] for l in quran_text)
+    if not isinstance(quran_text, str):
+        raise TypeError('quran_text must be an str')
+    try:
+        return ''.join(quran_buckwalter_scheme[l] for l in quran_text)
+    except KeyError as e:
+        raise ValueError('quran_text can only contains buckwalter characters and spaces') from e
 
 
 def transliterate_to_ascii(quran_text):
-    return ''.join(quran_buckwalter_reversed_scheme[l] for l in quran_text)
+    if not isinstance(quran_text, str):
+        raise TypeError('quran_text must be an str')
+    try:
+        return ''.join(quran_buckwalter_reversed_scheme[l] for l in quran_text)
+    except KeyError as e:
+        raise ValueError('quran_text can only contains Quran arabic characters and spaces') from e

@@ -10,21 +10,23 @@ class Quran(Iterable):
         self.sourats = []
 
     def __iadd__(self, other):
-        assert isinstance(other, Sourat)
+        if not isinstance(other, Sourat):
+            raise TypeError('+= in Quran can only be used with Sourat object')
         if other not in self.sourats:
             self.sourats.append(other)
         return self
 
     def __getitem__(self, sourat_num):
-        assert isinstance(sourat_num, int) or isinstance(sourat_num, slice)
+        if not (isinstance(sourat_num, int) or isinstance(sourat_num, slice)):
+            raise TypeError('Indexing Quran can be done only using ints or slices')
         if isinstance(sourat_num, int):
             sourat_num -= 1
         else:
             sourat_num = slice(sourat_num.start - 1, sourat_num.stop)
         try:
             return self.sourats[sourat_num]
-        except IndexError:
-            return None
+        except IndexError as e:
+            raise IndexError('Invalid index : '+str(sourat_num)) from e
 
     def __len__(self):
         return len(self.sourats)
@@ -163,22 +165,23 @@ class Sourat(Iterable):
         return self.num
 
     def __iadd__(self, other):
-        assert isinstance(other, Ayat)
-        if isinstance(other, Ayat):
-            if other not in self.ayats:
-                self.ayats.append(other)
+        if not isinstance(other, Ayat):
+            raise TypeError('+= can be used in Sourat only with Ayat object')
+        if other not in self.ayats:
+            self.ayats.append(other)
         return self
 
     def __getitem__(self, ayat_num):
-        assert isinstance(ayat_num, int) or isinstance(ayat_num, slice)
+        if not (isinstance(ayat_num, int) or isinstance(ayat_num, slice)):
+            raise TypeError('Indexing Sourat can be done only using ints or slices')
         if isinstance(ayat_num, int):
             ayat_num -= 1
         else:
             ayat_num = slice(ayat_num.start-1, ayat_num.stop)
         try:
             return self.ayats[ayat_num]
-        except IndexError:
-            return None
+        except IndexError as e:
+            raise IndexError('Invalid index : '+str(ayat_num)) from e
 
     def __len__(self):
         return len(self.ayats)
@@ -189,37 +192,50 @@ class Sourat(Iterable):
     def __iter__(self):
         return iter(self.ayats)
 
+    def get_number(self):
+        return self.num
+
+    def __eq__(self, other):
+        if not isinstance(other, Sourat):
+            raise TypeError('Can not compare Sourat to another object with a different type')
+        return self.get_number() == other.get_number()
+
 
 class Ayat(Iterable):
     """
     Represent an Ayat in Sourat of Quran.
     """
 
-    def __init__(self, number):
-        assert isinstance(number, int)
+    def __init__(self, number, sourat):
+        if not isinstance(number, int):
+            raise TypeError('number must be int')
+        if not isinstance(sourat, Sourat):
+            raise TypeError('sourat must be Sourat')
         self.num = number
         self.words = []
+        self.sourat = sourat
 
     def __int__(self):
         return self.num
 
     def __iadd__(self, other):
-        assert isinstance(other, Word)
-        if isinstance(other, Word):
-            if other not in self.words:
-                self.words.append(other)
+        if not isinstance(other, Word):
+            raise TypeError('+= can be used in Ayat only with Word object')
+        if other not in self.words:
+            self.words.append(other)
         return self
 
     def __getitem__(self, word_num):
-        assert isinstance(word_num, int) or isinstance(word_num, slice)
+        if not (isinstance(word_num, int) or isinstance(word_num, slice)):
+            raise TypeError('Indexing Ayat can be done only using ints or slices')
         if isinstance(word_num, int):
             word_num -= 1
         else:
             word_num = slice(word_num.start - 1, word_num.stop)
         try:
             return self.words[word_num]
-        except IndexError:
-            return None
+        except IndexError as e:
+            raise IndexError('Invalid index : ' + str(word_num)) from e
 
     def __len__(self):
         return len(self.words)
@@ -230,40 +246,69 @@ class Ayat(Iterable):
     def __iter__(self):
         return iter(self.words)
 
+    def get_number(self):
+        return self.sourat.get_number(), self.num
+
+    def __eq__(self, other):
+        if not isinstance(other, Ayat):
+            raise TypeError('Can not compare Ayat to another object with a different type')
+        return self.get_number() == other.get_number()
+
 
 class Word(Iterable):
     """
     Represent a word in an Ayat in a Sourat of Quran.
     """
 
-    def __init__(self, number, text, features):
-        assert isinstance(number, int)
-        assert isinstance(text, str)
-        assert isinstance(features, dict) and features['type'] in ('PREFIX', 'STEM', 'SUFFIX')
+    def __init__(self, number, text, features, ayat):
+        if not isinstance(number, int):
+            raise TypeError('number must be int')
+        if not isinstance(text, str):
+            raise TypeError('text must be str')
+        if not (isinstance(features, dict) and features['type'] in ('PREFIX', 'STEM', 'SUFFIX')):
+            raise TypeError('features[type] must be one of PREFIX, STEM, SUFFIX')
+        if not isinstance(ayat, Ayat):
+            raise TypeError('ayat must be Ayat')
         self.num = number
         self.text = text
         self.root = features.get('ROOT', None)
         self.lem = features.get('LEM', None)
         self.type = features['type']
         self.next = None
+        self.previous = None
+        self.ayat = ayat
 
     def __iadd__(self, other):
-        assert isinstance(other, Word)
+        if not isinstance(other, Word):
+            raise TypeError('+= can be used in Word only with Word object')
         self.next = other
+        other.previous = self
         return other
 
+    def __add__(self, other):
+        return self.__iadd__(other)
+
     def __isub__(self, other):
-        assert isinstance(other, Word)
+        if not isinstance(other, Word):
+            raise TypeError('-= can be used in Ayat only with Word object')
         other.next = self
+        self.previous = other
         return other
+
+    def __sub__(self, other):
+        return self.__isub__(other)
 
     def __int__(self):
         return self.num
 
     def __str__(self):
         whole_word = self.text
+        previous_part = self.previous
+        while previous_part:  # Find all prefixes/predecessor stems
+            whole_word = previous_part.text + whole_word
+            previous_part = previous_part.previous
         next_part = self.next
-        while next_part:
+        while next_part:  # Find all suffixes/successor stems
             whole_word += next_part.text
             next_part = next_part.next
         return whole_word
@@ -274,51 +319,79 @@ class Word(Iterable):
             yield next_part
             next_part = next_part.next
 
+    def get_number(self):
+        sourat_num, ayat_num = self.ayat.get_number()
+        return sourat_num, ayat_num, self.num
+
+    def __eq__(self, other):
+        if not isinstance(other, Word):
+            raise TypeError('Can not compare Word to another object with a different type')
+        return self.get_number() == other.get_number()
+
 
 def parse_quranic_corpus(file_path):
-    quran = Quran()
-    with open(file_path, encoding='utf-8', errors='ignore') as corpus_file:
-        # Invalid Sourat, Ayat and Word. Used just to initialize.
-        current_sourat = Sourat(0)
-        current_ayat = Ayat(0)
-        current_word = Word(0, '', {'type': 'STEM'})
-        for line in corpus_file:
-            line = line.strip()
-            if not line.startswith('('):
-                continue  # Ignore any lines without data
-            line_parts = line.split('\t')
-            sourat_num, ayat_num, word_num, word_part_num = (
-                int(number.strip('()')) for number in line_parts[0].split(':')
-            )
-            text = line_parts[1]
-            # tag = line_parts[2]  # Useless for now.
-            features = line_parts[3].split('|')
-            features_dict = {'type': features[0]}
-            for feature in features[1:]:
-                if feature.startswith('POS:'):  # Part of speech
-                    features_dict['POS'] = feature[4:]
-                if feature.startswith('LEM:'):  # Lemme
-                    features_dict['LEM'] = feature[4:]
-                elif feature.startswith('ROOT:'):  # Root
-                    features_dict['ROOT'] = feature[5:]
-            if sourat_num != int(current_sourat):  # Found another Sourat
-                current_sourat = Sourat(sourat_num)
-                quran += current_sourat
-            if ayat_num != int(current_ayat):  # Found another Ayat
-                current_ayat = Ayat(ayat_num)
-                current_sourat += current_ayat
-            if word_num != int(current_word):  # Found another word
-                current_word = Word(word_num, text, features_dict)
-                current_ayat += current_word
-            else:  # Found a suffix or an attached stem after a stem, or a stem after prefix
-                current_word += Word(word_num, text, features_dict)
-    return quran
+    try:
+        quran = Quran()
+        with open(file_path, encoding='utf-8', errors='ignore') as corpus_file:
+            # Invalid Sourat, Ayat and Word. Used just to initialize.
+            current_sourat = Sourat(0)
+            current_ayat = Ayat(0, current_sourat)
+            current_word = Word(0, '', {'type': 'STEM'}, current_ayat)
+            word_prefix = None
+            for line in corpus_file:
+                line = line.strip()
+                if not line.startswith('('):
+                    continue  # Ignore any lines without data
+                line_parts = line.split('\t')
+                sourat_num, ayat_num, word_num, word_part_num = (
+                    int(number.strip('()')) for number in line_parts[0].split(':')
+                )
+                text = line_parts[1]
+                # tag = line_parts[2]  # Useless for now.
+                features = line_parts[3].split('|')
+                features_dict = {'type': features[0]}
+                for feature in features[1:]:
+                    if feature.startswith('POS:'):  # Part of speech
+                        features_dict['POS'] = feature[4:]
+                    if feature.startswith('LEM:'):  # Lemme
+                        features_dict['LEM'] = feature[4:]
+                    elif feature.startswith('ROOT:'):  # Root
+                        features_dict['ROOT'] = feature[5:]
+                if current_sourat.get_number() != sourat_num:  # Found another Sourat
+                    current_sourat = Sourat(sourat_num)
+                    quran += current_sourat
+                if current_ayat.get_number() != (sourat_num, ayat_num):  # Found another Ayat
+                    current_ayat = Ayat(ayat_num, current_sourat)
+                    current_sourat += current_ayat
+                word_part = Word(word_num, text, features_dict, current_ayat)
+                if features_dict['type'] == 'PREFIX':
+                    if word_prefix is None:
+                        word_prefix = word_part
+                    else:
+                        word_prefix += word_part
+                elif features_dict['type'] == 'STEM':
+                    if word_prefix is None:
+                        current_word = word_part
+                    else:
+                        current_word = word_prefix + word_part
+                        word_prefix = None
+                    current_ayat += current_word
+                else:  # Found a suffix
+                    current_word += word_part
+        return quran
+    except (IndexError, ValueError, TypeError) as e:
+        raise SyntaxError('The syntax of the file is invalid') from e
 
 if __name__ == '__main__':
     from QuranTransliteration import transliterate_to_arabic
-    quran = parse_quranic_corpus('quranic-corpus-morphology-0.4.txt')
-    for sourat in quran:
-        print(sourat)
+    quran_last_14_sourats = parse_quranic_corpus('quranic-corpus-morphology-0.4-last-14-sourats.txt')
+    for sourat in quran_last_14_sourats:
+        print('-'*10)
+        print('سورة', sourat)
+        i = 1
         for ayat in sourat:
-            print(transliterate_to_arabic(str(ayat)))
-        break
+            for word in ayat:
+                print(transliterate_to_arabic(str(word)), end=' ')
+            print('(', i, ')', sep='')
+            i += 1
+        print()
