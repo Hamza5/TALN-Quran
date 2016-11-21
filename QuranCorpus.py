@@ -1,4 +1,5 @@
 from collections.abc import Iterable
+from QuranTransliteration import transliterate_to_arabic
 
 
 class Quran(Iterable):
@@ -25,8 +26,8 @@ class Quran(Iterable):
             sourat_num = slice(sourat_num.start - 1, sourat_num.stop)
         try:
             return self.sourats[sourat_num]
-        except IndexError as e:
-            raise IndexError('Invalid index : '+str(sourat_num)) from e
+        except IndexError:
+            return None
 
     def __len__(self):
         return len(self.sourats)
@@ -160,9 +161,14 @@ class Sourat(Iterable):
         "الناس"
     ]
 
-    def __init__(self, number):
+    def __init__(self, number, quran):
+        if not isinstance(number, int):
+            raise TypeError('number must be int')
+        if not isinstance(quran, Quran):
+            raise TypeError('quran must be Quran')
         self.num = number
         self.ayats = []
+        self.quran = quran
 
     def __int__(self):
         return self.num
@@ -183,8 +189,8 @@ class Sourat(Iterable):
             ayat_num = slice(ayat_num.start-1, ayat_num.stop)
         try:
             return self.ayats[ayat_num]
-        except IndexError as e:
-            raise IndexError('Invalid index : '+str(ayat_num)) from e
+        except IndexError:
+            return None
 
     def __len__(self):
         return len(self.ayats)
@@ -198,14 +204,26 @@ class Sourat(Iterable):
     def __eq__(self, other):
         if not isinstance(other, Sourat):
             raise TypeError('Can not compare Sourat to another object with a different type')
-        return self.get_location() == other.get_location()
+        return self.location() == other.location()
 
     def __repr__(self):
-        return "<Sourat ({}) name='{}' contains {} Ayat{}>".format(self.get_location(), str(self),
+        return "<Sourat ({}) name='{}' contains {} Ayat{}>".format(self.location(), str(self),
                                                                    len(self), 's' if len(self) > 1 else '')
 
-    def get_location(self):
+    def location(self):
         return self.num
+
+    def previous(self):
+        p_num = self.num-1
+        if p_num < 1:
+            return None
+        return self.quran[p_num]
+
+    def next(self):
+        n_num = self.num+1
+        if n_num > len(self.quran):
+            return None
+        return self.quran[n_num]
 
 
 class Ayat(Iterable):
@@ -241,8 +259,8 @@ class Ayat(Iterable):
             word_num = slice(word_num.start - 1, word_num.stop)
         try:
             return self.words[word_num]
-        except IndexError as e:
-            raise IndexError('Invalid index : ' + str(word_num)) from e
+        except IndexError:
+            return None
 
     def __len__(self):
         return len(self.words)
@@ -256,13 +274,33 @@ class Ayat(Iterable):
     def __eq__(self, other):
         if not isinstance(other, Ayat):
             raise TypeError('Can not compare Ayat to another object with a different type')
-        return self.get_location() == other.get_location()
+        return self.location() == other.location()
 
     def __repr__(self):
-        return "<Ayat ({},{}) contains {} word{}>".format(*self.get_location(), len(self), 's' if len(self) > 1 else '')
+        return "<Ayat ({},{}) contains {} word{}>".format(*self.location(), len(self), 's' if len(self) > 1 else '')
 
-    def get_location(self):
-        return self.sourat.get_location(), self.num
+    def location(self):
+        return self.sourat.location(), self.num
+
+    def previous(self):
+        p_num = self.num-1
+        if p_num < 1:
+            s = self.sourat.previous()
+            if s:
+                return s[0]
+            else:
+                return None
+        return self.sourat[p_num]
+
+    def next(self):
+        n_num = self.num+1
+        if n_num > len(self.sourat):
+            s = self.sourat.next()
+            if s:
+                return s[1]
+            else:
+                return None
+        return self.sourat[n_num]
 
 
 class Word(Iterable):
@@ -284,15 +322,15 @@ class Word(Iterable):
         self.root = features.get('ROOT', None)
         self.lem = features.get('LEM', None)
         self.type = features['type']
-        self.next = None
-        self.previous = None
+        self.next_part = None
+        self.previous_part = None
         self.ayat = ayat
 
     def __iadd__(self, other):
         if not isinstance(other, Word):
             raise TypeError('+= can be used in Word only with Word object')
-        self.next = other
-        other.previous = self
+        self.next_part = other
+        other.previous_part = self
         return other
 
     def __add__(self, other):
@@ -301,8 +339,8 @@ class Word(Iterable):
     def __isub__(self, other):
         if not isinstance(other, Word):
             raise TypeError('-= can be used in Ayat only with Word object')
-        other.next = self
-        self.previous = other
+        other.next_part = self
+        self.previous_part = other
         return other
 
     def __sub__(self, other):
@@ -312,58 +350,82 @@ class Word(Iterable):
         return self.num
 
     def __str__(self):
-        return self.get_prefix() + self.text + self.get_suffix()
+        return transliterate_to_arabic(self.prefix() + self.text + self.suffix())
 
     def __iter__(self):
         next_part = self
         while next_part:
             yield next_part
-            next_part = next_part.next
+            next_part = next_part.next_part
 
     def __eq__(self, other):
         if not isinstance(other, Word):
             raise TypeError('Can not compare Word to another object with a different type')
-        return self.get_location() == other.get_location()
+        return self.location() == other.location()
 
     def __repr__(self):
         return "<Word ({},{},{}) prefix='{}' stem='{}' suffix='{}' lemme='{}' root='{}'>".format(
-            *self.get_location(), self.get_prefix(), self.get_stem(),
-            self.get_suffix(), self.get_lemme(), self.get_root()
+            *self.location(), self.prefix(), self.stem(),
+            self.suffix(), self.lemme(), self.root()
         )
 
-    def get_location(self):
-        sourat_num, ayat_num = self.ayat.get_location()
+    def __hash__(self):
+        sourat_num, ayat_num = self.ayat.location()
+        return sourat_num * 100000 + ayat_num * 100 + self.num
+
+    def location(self):
+        sourat_num, ayat_num = self.ayat.location()
         return sourat_num, ayat_num, self.num
 
-    def get_prefix(self):
+    def prefix(self):
         prefix = ''
         if self.type == 'STEM':
-            previous_part = self.previous
+            previous_part = self.previous_part
             while previous_part:  # Find all prefixes/predecessor stems
                 prefix = previous_part.text + prefix
-                previous_part = previous_part.previous
+                previous_part = previous_part.previous_part
         return prefix
 
-    def get_suffix(self):
+    def suffix(self):
         suffix = ''
         if self.type == 'STEM':
-            next_part = self.next
+            next_part = self.next_part
             while next_part:  # Find all suffixes/successor stems
                 suffix += next_part.text
-                next_part = next_part.next
+                next_part = next_part.next_part
         return suffix
 
-    def get_stem(self):
+    def stem(self):
         if self.type == 'STEM':
             return self.text
         else:
             return ''
 
-    def get_lemme(self):
+    def lemme(self):
         return self.lem or ''
 
-    def get_root(self):
+    def root(self):
         return self.root or ''
+
+    def previous(self):
+        p_num = self.num-1
+        if p_num < 1:
+            previous_ayat = self.ayat.previous()
+            if previous_ayat:
+                return previous_ayat[0]
+            else:
+                return None
+        return self.ayat[p_num]
+
+    def next(self):
+        n_num = self.num+1
+        if n_num > len(self.ayat):
+            next_ayat = self.ayat.next()
+            if next_ayat:
+                return next_ayat[1]
+            else:
+                return None
+        return self.ayat[n_num]
 
 
 def parse_quranic_corpus(file_path):
@@ -371,7 +433,7 @@ def parse_quranic_corpus(file_path):
         quran = Quran()
         with open(file_path, encoding='utf-8', errors='ignore') as corpus_file:
             # Invalid Sourat, Ayat and Word. Used just to initialize.
-            current_sourat = Sourat(0)
+            current_sourat = Sourat(0, quran)
             current_ayat = Ayat(0, current_sourat)
             current_word = Word(0, '', {'type': 'STEM'}, current_ayat)
             word_prefix = None
@@ -394,10 +456,10 @@ def parse_quranic_corpus(file_path):
                         features_dict['LEM'] = feature[4:]
                     elif feature.startswith('ROOT:'):  # Root
                         features_dict['ROOT'] = feature[5:]
-                if current_sourat.get_location() != sourat_num:  # Found another Sourat
-                    current_sourat = Sourat(sourat_num)
+                if current_sourat.location() != sourat_num:  # Found another Sourat
+                    current_sourat = Sourat(sourat_num, quran)
                     quran += current_sourat
-                if current_ayat.get_location() != (sourat_num, ayat_num):  # Found another Ayat
+                if current_ayat.location() != (sourat_num, ayat_num):  # Found another Ayat
                     current_ayat = Ayat(ayat_num, current_sourat)
                     current_sourat += current_ayat
                 word_part = Word(word_num, text, features_dict, current_ayat)
@@ -423,16 +485,18 @@ def parse_quranic_corpus(file_path):
 def search_word(searched_word, quran):
     if not isinstance(searched_word, str):
         raise TypeError('searched_word must be str')
+    if not isinstance(quran, Quran):
+        raise TypeError('quran must be Quran')
     matches = []
     for sourat in quran:
         for ayat in sourat:
             for word in ayat:
                 score = 0
-                word_prefix = word.get_prefix()
-                word_stem = word.get_stem()
-                word_suffix = word.get_suffix()
-                word_lemme = word.get_lemme()
-                word_root = word.get_root()
+                word_prefix = word.prefix()
+                word_stem = word.stem()
+                word_suffix = word.suffix()
+                word_lemme = word.lemme()
+                word_root = word.root()
                 if word_prefix and searched_word.startswith(word_prefix):  # Prefix matches
                     if searched_word.startswith(word_stem, len(word_prefix)):  # Stem matches
                         if searched_word.endswith(word_suffix):  # Suffix matches
@@ -452,18 +516,9 @@ def search_word(searched_word, quran):
     return sorted(matches, key=lambda m: m[1])
 
 if __name__ == '__main__':
-    from QuranTransliteration import *
     quran_last_14_sourats = parse_quranic_corpus('quranic-corpus-morphology-0.4-last-14-sourats.txt')
-    for sourat in quran_last_14_sourats:
-        print('-'*10)
-        print('سورة', sourat)
-        i = 1
-        for ayat in sourat:
-            for word in ayat:
-                print(transliterate_to_arabic(str(word)), end=' ')
-            print('(', i, ')', sep='')
-            i += 1
-        print()
-    searched_word = transliterate_to_ascii(input('Search\n> '))
-    found_words = search_word(searched_word, quran_last_14_sourats)
-    print(found_words)
+    sourat = quran_last_14_sourats[1]
+    ayat = sourat[3]
+    print(ayat[1].previous())
+    print(ayat[1])
+    print(ayat[1].next())
