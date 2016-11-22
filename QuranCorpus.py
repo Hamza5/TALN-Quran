@@ -302,6 +302,9 @@ class Ayat(Iterable):
                 return None
         return self.sourat[n_num]
 
+    def arabic_text(self):
+        return transliterate_to_arabic(str(self))
+
 
 class Word(Iterable):
     """
@@ -319,7 +322,7 @@ class Word(Iterable):
             raise TypeError('ayat must be Ayat')
         self.num = number
         self.text = text
-        self.root = features.get('ROOT', None)
+        self.rt = features.get('ROOT', None)
         self.lem = features.get('LEM', None)
         self.type = features['type']
         self.next_part = None
@@ -350,7 +353,7 @@ class Word(Iterable):
         return self.num
 
     def __str__(self):
-        return transliterate_to_arabic(self.prefix() + self.text + self.suffix())
+        return self.prefix() + self.text + self.suffix()
 
     def __iter__(self):
         next_part = self
@@ -405,7 +408,7 @@ class Word(Iterable):
         return self.lem or ''
 
     def root(self):
-        return self.root or ''
+        return self.rt or ''
 
     def previous(self):
         p_num = self.num-1
@@ -426,6 +429,9 @@ class Word(Iterable):
             else:
                 return None
         return self.ayat[n_num]
+
+    def arabic_text(self):
+        return transliterate_to_arabic(str(self))
 
 
 def parse_quranic_corpus(file_path):
@@ -515,10 +521,40 @@ def search_word(searched_word, quran):
                     matches.append((word, score))
     return sorted(matches, key=lambda m: m[1])
 
+
+def concordance(searched_word, quran, words_around_count=5):
+    contexts = []
+    indexes = []
+    found_words = search_word(searched_word, quran)
+    for word, score in found_words:
+        context = [word]
+        i = words_around_count
+        previous_word = word.previous()
+        while previous_word and i > 0:
+            context.append(previous_word)
+            previous_word = previous_word.previous()
+            i -= 1
+        context.reverse()
+        indexes.append(len(context) - 1)
+        i = 0
+        next_word = word.next()
+        while next_word and i < words_around_count:
+            context.append(next_word)
+            next_word = next_word.next()
+            i += 1
+        contexts.append(tuple(context))
+    return contexts, indexes
+
 if __name__ == '__main__':
-    quran_last_14_sourats = parse_quranic_corpus('quranic-corpus-morphology-0.4-last-14-sourats.txt')
-    sourat = quran_last_14_sourats[1]
-    ayat = sourat[3]
-    print(ayat[1].previous())
-    print(ayat[1])
-    print(ayat[1].next())
+    from QuranTransliteration import transliterate_to_ascii
+    quran_last_14_sourats = parse_quranic_corpus('quranic-corpus-morphology-0.4.txt')
+    word = transliterate_to_ascii('كثر')
+    contexts, indexes = concordance(word, quran_last_14_sourats)
+    for cntx, idx in zip(contexts, indexes):
+        i = 0
+        for w in cntx:
+            if i == idx:
+                print('(', w.arabic_text(), ')', end=' ')
+            else:
+                print(w.arabic_text(), end=' ')
+            i += 1
