@@ -1,3 +1,8 @@
+import re
+
+redundant_alef_ascii_pattern = re.compile('\{|Y`(?!\W)|YA|`')
+redundant_alef_arabic_pattern = re.compile('\u0671|\u0649\u0670(?!\W)|\u0649\u0627|\u0670')
+
 quran_buckwalter_scheme = {
     "'": "\u0621",
     ">": "\u0623",
@@ -63,6 +68,12 @@ quran_buckwalter_scheme = {
 }
 quran_buckwalter_reversed_scheme = dict((v, k) for (k, v) in quran_buckwalter_scheme.items())
 
+diacritics_arabic = {"\u0640", "\u064B", "\u064C", "\u064D", "\u064E", "\u064F", "\u0650", "\u0651", "\u0652", "\u0653",
+                     "\u0654", "\u06DC", "\u06DF", "\u06E0", "\u06E2", "\u06E3", "\u06E5", "\u06E6", "\u06E8", "\u06EA",
+                     "\u06EB", "\u06EC", "\u06ED"}
+
+diacritics_ascii = {quran_buckwalter_reversed_scheme[key] for key in diacritics_arabic}
+
 
 def transliterate_to_arabic(quran_text):
     if not isinstance(quran_text, str):
@@ -80,3 +91,13 @@ def transliterate_to_ascii(quran_text):
         return ''.join(quran_buckwalter_reversed_scheme[l] for l in quran_text)
     except KeyError as e:
         raise ValueError('quran_text can only contains Quran arabic characters and spaces') from e
+
+
+def clear_diacritics_arabic(arabic_text):
+    diacritics_stripped = ''.join(l for l in arabic_text if l not in diacritics_arabic)
+    return re.sub(redundant_alef_arabic_pattern, "\u0627", diacritics_stripped)  # Normalize alefs
+
+
+def clear_diacritics_ascii(ascii_text):
+    diacritics_stripped = ''.join(l for l in ascii_text if l not in diacritics_ascii)
+    return re.sub(redundant_alef_ascii_pattern, 'A', diacritics_stripped)  # Normalize alefs
