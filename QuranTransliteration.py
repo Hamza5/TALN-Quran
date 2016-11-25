@@ -2,6 +2,10 @@ import re
 
 redundant_alef_ascii_pattern = re.compile('\{|Y`(?!\W)|YA|`')
 redundant_alef_arabic_pattern = re.compile('\u0671|\u0649\u0670(?!\W)|\u0649\u0627|\u0670')
+false_maqsoura_ascii_pattern = re.compile('Y(?=\W)')
+false_maqsoura_arabic_pattern = re.compile('\u0649(?=\W)')
+false_alef_ascii_pattern = re.compile('YA(?=\W)')
+false_alef_arabic_pattern = re.compile('\u0649\u0627(?=\W)')
 
 quran_buckwalter_scheme = {
     "'": "\u0621",
@@ -95,9 +99,13 @@ def transliterate_to_ascii(quran_text):
 
 def clear_diacritics_arabic(arabic_text):
     diacritics_stripped = ''.join(l for l in arabic_text if l not in diacritics_arabic)
-    return re.sub(redundant_alef_arabic_pattern, "\u0627", diacritics_stripped)  # Normalize alefs
+    alefs_normalised = re.sub(redundant_alef_arabic_pattern, "\u0627", diacritics_stripped)  # Normalize alefs
+    end_ya_corrected = re.sub(false_maqsoura_arabic_pattern, '\u064A', alefs_normalised)
+    return re.sub(false_alef_arabic_pattern, '\u0649', end_ya_corrected)
 
 
 def clear_diacritics_ascii(ascii_text):
     diacritics_stripped = ''.join(l for l in ascii_text if l not in diacritics_ascii)
-    return re.sub(redundant_alef_ascii_pattern, 'A', diacritics_stripped)  # Normalize alefs
+    alefs_normalised = re.sub(redundant_alef_ascii_pattern, 'A', diacritics_stripped)  # Normalize alefs
+    end_ya_corrected = re.sub(false_maqsoura_ascii_pattern, 'y', alefs_normalised)
+    return re.sub(false_alef_ascii_pattern, 'Y', end_ya_corrected)
