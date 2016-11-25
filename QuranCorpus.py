@@ -1,5 +1,5 @@
 from collections.abc import Iterable
-from QuranTransliteration import transliterate_to_arabic
+from QuranTransliteration import transliterate_to_arabic, clear_diacritics_ascii, transliterate_to_ascii
 
 
 class Quran(Iterable):
@@ -494,6 +494,7 @@ def search_word(searched_word, quran):
     if not isinstance(quran, Quran):
         raise TypeError('quran must be Quran')
     matches = []
+    searched_word_nd = clear_diacritics_ascii(searched_word)
     for sourat in quran:
         for ayat in sourat:
             for word in ayat:
@@ -503,20 +504,31 @@ def search_word(searched_word, quran):
                 word_suffix = word.suffix()
                 word_lemme = word.lemme()
                 word_root = word.root()
-                if word_prefix and searched_word.startswith(word_prefix):  # Prefix matches
-                    if searched_word.startswith(word_stem, len(word_prefix)):  # Stem matches
-                        if searched_word.endswith(word_suffix):  # Suffix matches
-                            score = 4
-                        else:
-                            score = 3
-                elif searched_word.startswith(word_stem):
+                word_stem_nd = clear_diacritics_ascii(word_stem)
+                if word_prefix:
+                    word_prefix_nd = clear_diacritics_ascii(word_prefix)
+                    if searched_word.startswith(word_prefix) or searched_word_nd.startswith(word_prefix_nd):
+                        # Prefix matches
+                        if searched_word.startswith(word_stem, len(word_prefix)) or searched_word_nd.startswith(word_stem_nd, len(word_prefix_nd)):
+                            # Stem matches
+                            word_sufix_nd = clear_diacritics_ascii(word_suffix)
+                            if searched_word.endswith(word_suffix) or searched_word_nd.endswith(word_sufix_nd):
+                                # Suffix matches
+                                score = 4
+                            else:
+                                score = 3
+                elif searched_word.startswith(word_stem) or searched_word_nd.startswith(word_stem_nd):
                     if word_suffix and searched_word.endswith(word_suffix):
                         score = 4
                     else:
                         score = 3
-                elif (word_lemme and searched_word.startswith(word_lemme))\
-                        or (word_root and searched_word.startswith(word_root)):
-                    score = 2
+                elif word_lemme:
+                    word_lemme_nd = clear_diacritics_ascii(word_lemme)
+                    if searched_word.startswith(word_lemme) or searched_word_nd.startswith(word_lemme_nd):
+                        score = 2
+                elif word_root:
+                    if searched_word.startswith(word_root):
+                        score = 2
                 if score > 0:
                     matches.append((word, score))
     return sorted(matches, key=lambda m: m[1])
@@ -546,15 +558,17 @@ def concordance(searched_word, quran, words_around_count=5):
     return contexts, indexes
 
 if __name__ == '__main__':
-    from QuranTransliteration import transliterate_to_ascii
-    quran_last_14_sourats = parse_quranic_corpus('quranic-corpus-morphology-0.4.txt')
-    word = transliterate_to_ascii('كثر')
-    contexts, indexes = concordance(word, quran_last_14_sourats)
-    for cntx, idx in zip(contexts, indexes):
-        i = 0
-        for w in cntx:
-            if i == idx:
-                print('(', w.arabic_text(), ')', end=' ')
+    quran = parse_quranic_corpus('quranic-corpus-morphology-0.4-last-14-sourats.txt')
+    for sourat in quran:
+        for ayat in sourat:
+            print(ayat.arabic_text())
+        print()
+
+    contexts, indexes = concordance(transliterate_to_ascii(input('Search : ')), quran)
+    for context, index in zip(contexts, indexes):
+        for i in range(len(context)):
+            if i == index:
+                print('{', context[i].arabic_text(), '}', sep='', end=' ')
             else:
-                print(w.arabic_text(), end=' ')
-            i += 1
+                print(context[i].arabic_text(), end=' ')
+        print()
