@@ -1,0 +1,69 @@
+import matplotlib.pyplot as plt
+import numpy as np
+from QuranCorpus import parse_quranic_corpus
+import re
+def load(file):
+    f = open(file, 'rU', encoding='utf-8')
+    return f.read()
+
+def index_ahkam(file_ahkam):
+     file = load(file_ahkam)
+     spliedfile = file.split(")")
+     ahkam_dict = dict()
+     ayate_dict = dict()
+     for aya in spliedfile:
+         if aya == "\n": 
+             break
+         splited_aya = aya.split("(")
+         sourat_mad = splited_aya[0]
+         aya_sourat = splited_aya[1].split(":")
+         sourat_number = aya_sourat[0]
+         aya_number = aya_sourat[1]
+         ayate_dict[int(aya_number)] = sourat_mad
+         if int(aya_number) == 1:
+             ahkam_dict[int(sourat_number)]= ayate_dict.copy()
+             ayate_dict.clear()
+             
+     return ahkam_dict
+         
+def histoplot(sourate,deb,fin,quran):
+    elements = []
+    labels = []
+    index_ahkam1 = index_ahkam("ahkaam_encoding.txt")
+    counts = {i: 0 for i in 'aiouA'}
+    addedspace = 0;
+    for ayat in range(deb, fin):
+        label = list(index_ahkam1[sourate+1][ayat])
+        addedspace = 0
+        ayastring = quran[sourate][ayat]
+        for word in str(ayastring).split(" "):
+            numerVoy = 0
+            for char in str(word):
+                if char in counts:
+                    numerVoy += 1
+            addedspace +=numerVoy
+            labels.append(word)
+            labels.extend([''] * (numerVoy - 1))
+        elements.extend(label)
+        if len(label)-addedspace >= 0:
+            labels.extend([''] * (len(label)-addedspace))
+        else:
+            elements.extend(['0'] * (addedspace - len(label)))
+    resultat = list(map(int, elements))
+    plt.figure()
+    plt.gca().invert_yaxis()
+    y_pos = np.arange(len(labels))
+    performance = resultat
+
+    plt.barh(y_pos, performance, align='center', alpha=1)
+    plt.yticks(y_pos, labels, rotation='horizontal')
+    plt.xlabel('Moudoud')
+    plt.title('Histogramme ')
+#    plt.show()
+    return plt
+
+
+if __name__ == '__main__':
+    quran= parse_quranic_corpus("../Quran/quranic-corpus-morphology-0.4.txt")
+    histoplot(2, 2, 5, quran).show()
+    
