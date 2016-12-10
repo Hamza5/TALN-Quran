@@ -1,5 +1,5 @@
 
-from QuranCorpus import parse_quranic_corpus
+from Functions.QuranCorpus import parse_quranic_corpus
 
 def load(file):
     f = open(file, 'rU', encoding='utf-8')
@@ -65,7 +65,7 @@ def Madsim(mad_serie,quran,mad_encode):
 
 
 if __name__ == '__main__':
-    quran= parse_quranic_corpus("../Quran/quranic-corpus-morphology-0.4.txt")
+    quran = parse_quranic_corpus("quranic-corpus-morphology-0.4.txt")
     list_ = Madsim("11211011212140",quran,"ahkaam_encoding.txt")
     for elem in list_:
         print (elem.arabic_text())
