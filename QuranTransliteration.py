@@ -1,7 +1,7 @@
 import re
 
-redundant_alef_ascii_pattern = re.compile('\{|Y`(?!\W)|YA|`')
-redundant_alef_arabic_pattern = re.compile('\u0671|\u0649\u0670(?!\W)|\u0649\u0627|\u0670')
+redundant_alef_ascii_pattern = re.compile('\{|Y`(?!\W)|YA|w`|`')
+redundant_alef_arabic_pattern = re.compile('\u0671|\u0649\u0670(?!\W)|\u0649\u0627|\u0648\u0670|\u0670')
 false_maqsoura_ascii_pattern = re.compile('Y(?=\W)')
 false_maqsoura_arabic_pattern = re.compile('\u0649(?=\W)')
 false_alef_ascii_pattern = re.compile('YA(?=\W)')
