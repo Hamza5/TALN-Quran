@@ -5,3 +5,7 @@
 !*.txt
 !Quran Translations
 !Quran Translations/*.txt
+!Functions/
+!Functions/*
+!GUI/
+!GUI/*
