@@ -10,7 +10,7 @@ def index_ahkam(file_ahkam):
      spliedfile = file.split(")")
      ahkam_dict = dict()
      ayate_dict = dict()
-     prev_sourat = 96
+     prev_sourat = 1
      for aya in spliedfile:
          if aya == "\n" or aya == "": 
              break
@@ -65,7 +65,7 @@ def Madsim(mad_serie,quran,mad_encode):
 
 
 if __name__ == '__main__':
-    quran = parse_quranic_corpus("quranic-corpus-morphology-0.4.txt")
-    list_ = Madsim("11211011212140",quran,"ahkaam_encoding.txt")
+    quran= parse_quranic_corpus("../Quran/quranic-corpus-morphology-0.4.txt")
+    list_ = Madsim("22121012210",quran,"ahkaam_encoding.txt")
     for elem in list_:
         print (elem.arabic_text())
