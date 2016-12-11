@@ -1,6 +1,6 @@
 from GUI.SelectorDialog import Ui_SelectorDialog
-from PyQt4.QtGui import QDialog, QApplication
-from Functions.QuranCorpus import Quran, parse_quranic_corpus
+from PyQt4.QtGui import QDialog
+from Functions.QuranCorpus import Quran
 
 
 class Selector(QDialog, Ui_SelectorDialog):
@@ -70,7 +70,15 @@ class Selector(QDialog, Ui_SelectorDialog):
         word_num = int(self.wordComboBox.currentText())
         return sourat_num, ayat_num, word_num
 
+    def ayat_selected(self):
+        return self.ayatCheckBox.isChecked()
+
+    def word_selected(self):
+        return self.wordCheckBox.isChecked()
+
 if __name__ == '__main__':
+    from PyQt4.QtGui import QApplication
+    from Functions.QuranCorpus import parse_quranic_corpus
     app = QApplication([])
     quran_full = parse_quranic_corpus('../quranic-corpus-morphology-0.4.txt')
     s = Selector(quran_full)
