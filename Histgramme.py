@@ -1,7 +1,8 @@
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 import matplotlib.pyplot as plt
 import numpy as np
 from QuranCorpus import parse_quranic_corpus
-import re
 def load(file):
     f = open(file, 'rU', encoding='utf-8')
     return f.read()
@@ -11,8 +12,9 @@ def index_ahkam(file_ahkam):
      spliedfile = file.split(")")
      ahkam_dict = dict()
      ayate_dict = dict()
+     prev_sourat = 1
      for aya in spliedfile:
-         if aya == "\n": 
+         if aya == "\n" or aya == "": 
              break
          splited_aya = aya.split("(")
          sourat_mad = splited_aya[0]
@@ -21,9 +23,12 @@ def index_ahkam(file_ahkam):
          aya_number = aya_sourat[1]
          ayate_dict[int(aya_number)] = sourat_mad
          if int(aya_number) == 1:
-             ahkam_dict[int(sourat_number)]= ayate_dict.copy()
+             ahkam_dict[prev_sourat]= ayate_dict.copy()
+             prev_sourat = int(sourat_number)
              ayate_dict.clear()
-             
+         if int(sourat_number) == 114 and int(aya_number) == 6: 
+             ahkam_dict[int(sourat_number)]= ayate_dict.copy()
+             ayate_dict.clear()     
      return ahkam_dict
          
 def histoplot(sourate,deb,fin,quran):
@@ -54,12 +59,10 @@ def histoplot(sourate,deb,fin,quran):
     plt.gca().invert_yaxis()
     y_pos = np.arange(len(labels))
     performance = resultat
-
     plt.barh(y_pos, performance, align='center', alpha=1)
     plt.yticks(y_pos, labels, rotation='horizontal')
-    plt.xlabel('Moudoud')
-    plt.title('Histogramme ')
-#    plt.show()
+    plt.xlabel('مد')
+    plt.title('Histogram')
     return plt
 
 
