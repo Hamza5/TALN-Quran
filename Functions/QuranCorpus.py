@@ -1,5 +1,6 @@
 from collections.abc import Iterable
-from QuranTransliteration import transliterate_to_arabic, clear_diacritics_ascii, transliterate_to_ascii
+
+from Functions.QuranTransliteration import transliterate_to_arabic, clear_diacritics_ascii, transliterate_to_ascii
 
 
 class Quran(Iterable):
@@ -488,7 +489,7 @@ def parse_quranic_corpus(file_path):
         raise SyntaxError('The syntax of the file is invalid') from e
 
 
-def search_word(searched_word, quran):
+def search_word(searched_word, quran, strict=False):
     if not isinstance(searched_word, str):
         raise TypeError('searched_word must be str')
     if not isinstance(quran, Quran):
@@ -510,37 +511,37 @@ def search_word(searched_word, quran):
                 word_lemme_nd = clear_diacritics_ascii(word_lemme)
                 if word_prefix and searched_word.startswith(word_prefix) and word_stem and searched_word[len(word_prefix):].startswith(word_stem):
                     score = 4
-                    if word_suffix and searched_word.endswith(word_suffix):
+                    if word_suffix and searched_word[len(word_prefix)+len(word_stem):] == word_suffix:
                         score += 1
                 elif word_stem and searched_word.startswith(word_stem):
                     score = 3
-                    if word_suffix and searched_word.endswith(word_suffix):
+                    if word_suffix and searched_word[len(word_stem):] == word_suffix:
                         score += 1
-                elif word_lemme and searched_word.startswith(word_lemme):
+                elif word_lemme and searched_word == word_lemme:
                     score = 2
                 elif word_root and searched_word == word_root:
                     score = 1
-                else:  # No diacritics
+                elif not strict:  # No diacritics
                     if word_prefix_nd and searched_word_nd.startswith(word_prefix_nd) and word_stem_nd and searched_word_nd[len(word_prefix_nd):].startswith(word_stem_nd):
                         score = 4
-                        if word_suffix_nd and searched_word_nd.endswith(word_suffix_nd):
+                        if word_suffix_nd and searched_word_nd[len(word_prefix_nd)+len(word_stem_nd):] == word_suffix_nd:
                             score += 1
                     elif word_stem_nd and searched_word_nd.startswith(word_stem_nd):
                         score = 3
-                        if word_suffix_nd and searched_word_nd.endswith(word_suffix_nd):
+                        if word_suffix_nd and searched_word_nd[len(word_stem_nd):] == word_suffix_nd:
                             score += 1
-                    elif word_lemme_nd and searched_word_nd.startswith(word_lemme_nd):
+                    elif word_lemme_nd and searched_word_nd == word_lemme_nd:
                         score = 2
                 if score > 0:
                     matches.append((word, score))
-    return sorted(matches, key=lambda m: m[1])
+    return sorted(matches, key=lambda m: m[1], reverse=True)
 
 
-def concordance(searched_word, quran, words_around_count=5):
+def concordance(searched_word, quran, words_around_count=5, strict=False):
     contexts = []
     indexes = []
     scores = []
-    found_words = search_word(searched_word, quran)
+    found_words = search_word(searched_word, quran, strict)
     for word, score in found_words:
         context = [word]
         i = words_around_count
@@ -562,8 +563,8 @@ def concordance(searched_word, quran, words_around_count=5):
     return contexts, indexes, scores
 
 if __name__ == '__main__':
-    quran = parse_quranic_corpus('quranic-corpus-morphology-0.4-last-14-sourats.txt')
-    for sourat in quran:
+    quran = parse_quranic_corpus('quranic-corpus-morphology-0.4.txt')
+    for sourat in quran[-50:]:
         for ayat in sourat:
             print(ayat.arabic_text())
         print()
@@ -571,12 +572,13 @@ if __name__ == '__main__':
     word_to_be_searched = True
     while word_to_be_searched:
         word_to_be_searched = transliterate_to_ascii(input('Search : '))
-        print(word_to_be_searched)
-        contexts, indexes, scores = concordance(word_to_be_searched, quran)
-        for context, index, score in zip(contexts, indexes, scores):
-            for i in range(len(context)):
-                if i == index:
-                    print('{', context[i].arabic_text(), '}', sep='', end=' ')
-                else:
-                    print(context[i].arabic_text(), end=' ')
-            print(score)
+        if word_to_be_searched:
+            print(word_to_be_searched)
+            contexts, indexes, scores = concordance(word_to_be_searched, quran)
+            for context, index, score in zip(contexts, indexes, scores):
+                for i in range(len(context)):
+                    if i == index:
+                        print('{', context[i].arabic_text(), '}', sep='', end=' ')
+                    else:
+                        print(context[i].arabic_text(), end=' ')
+                print(score)

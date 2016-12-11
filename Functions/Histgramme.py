@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-import matplotlib.pyplot as plt
 import numpy as np
-from QuranCorpus import parse_quranic_corpus
+from Functions.QuranCorpus import parse_quranic_corpus
 def load(file):
     f = open(file, 'rU', encoding='utf-8')
     return f.read()
@@ -34,7 +33,7 @@ def index_ahkam(file_ahkam):
 def histoplot(sourate,deb,fin,quran):
     elements = []
     labels = []
-    index_ahkam1 = index_ahkam("ahkaam_encoding.txt")
+    index_ahkam1 = index_ahkam("../ahkaam_encoding.txt")
     counts = {i: 0 for i in 'aiouA'}
     addedspace = 0;
     for ayat in range(deb, fin):
@@ -55,18 +54,19 @@ def histoplot(sourate,deb,fin,quran):
         else:
             elements.extend(['0'] * (addedspace - len(label)))
     resultat = list(map(int, elements))
-    plt.figure()
-    plt.gca().invert_yaxis()
+    import pylab as pl
+    figure = pl.figure()
+    ax = pl.subplot(111)
     y_pos = np.arange(len(labels))
     performance = resultat
-    plt.barh(y_pos, performance, align='center', alpha=1)
-    plt.yticks(y_pos, labels, rotation='horizontal')
-    plt.xlabel('مد')
-    plt.title('Histogram')
-    return plt
-
+    ax.bar(y_pos, performance, align='center', alpha=1)
+    ax.set_label(performance)
+    pl.xticks(y_pos, labels, rotation=30)
+    ax.set_xlabel('Elongation')
+    ax.set_title('Histogram')
+    return figure
 
 if __name__ == '__main__':
-    quran= parse_quranic_corpus("../Quran/quranic-corpus-morphology-0.4.txt")
+    quran= parse_quranic_corpus("../quranic-corpus-morphology-0.4.txt")
     histoplot(2, 2, 5, quran).show()
     

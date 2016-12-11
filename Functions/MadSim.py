@@ -1,5 +1,5 @@
 
-from QuranCorpus import parse_quranic_corpus
+from Functions.QuranCorpus import parse_quranic_corpus
 
 def load(file):
     f = open(file, 'rU', encoding='utf-8')

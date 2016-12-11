@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'HistogramTab.ui'
 #
-# Created: Sun Dec 11 09:37:40 2016
+# Created: Sun Dec 11 12:27:49 2016
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -23,17 +23,17 @@ except AttributeError:
     def _translate(context, text, disambig):
         return QtGui.QApplication.translate(context, text, disambig)
 
-class Ui_Form(object):
-    def setupUi(self, Form):
-        Form.setObjectName(_fromUtf8("Form"))
-        Form.resize(599, 386)
-        self.mplvl = QtGui.QVBoxLayout(Form)
+class Ui_HistogramForme(object):
+    def setupUi(self, HistogramForme):
+        HistogramForme.setObjectName(_fromUtf8("HistogramForme"))
+        HistogramForme.resize(599, 386)
+        self.mplvl = QtGui.QVBoxLayout(HistogramForme)
         self.mplvl.setObjectName(_fromUtf8("mplvl"))
-        self.comboBox = QtGui.QComboBox(Form)
+        self.comboBox = QtGui.QComboBox(HistogramForme)
         self.comboBox.setMinimumSize(QtCore.QSize(581, 0))
         self.comboBox.setObjectName(_fromUtf8("comboBox"))
         self.mplvl.addWidget(self.comboBox, QtCore.Qt.AlignLeft|QtCore.Qt.AlignBottom)
-        self.figureGroupBox = QtGui.QGroupBox(Form)
+        self.figureGroupBox = QtGui.QGroupBox(HistogramForme)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -43,7 +43,7 @@ class Ui_Form(object):
         self.verticalLayout = QtGui.QVBoxLayout(self.figureGroupBox)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.mplvl.addWidget(self.figureGroupBox)
-        self.widget = QtGui.QWidget(Form)
+        self.widget = QtGui.QWidget(HistogramForme)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Maximum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -57,24 +57,24 @@ class Ui_Form(object):
         self.horizontalLayout_2.addItem(spacerItem)
         self.gridLayout_2 = QtGui.QGridLayout()
         self.gridLayout_2.setObjectName(_fromUtf8("gridLayout_2"))
-        self.pushButton_2 = QtGui.QPushButton(self.widget)
-        self.pushButton_2.setFlat(False)
-        self.pushButton_2.setObjectName(_fromUtf8("pushButton_2"))
-        self.gridLayout_2.addWidget(self.pushButton_2, 0, 0, 1, 1)
-        self.pushButton = QtGui.QPushButton(self.widget)
-        self.pushButton.setObjectName(_fromUtf8("pushButton"))
-        self.gridLayout_2.addWidget(self.pushButton, 0, 1, 1, 1)
+        self.pushButtonSuivant = QtGui.QPushButton(self.widget)
+        self.pushButtonSuivant.setFlat(False)
+        self.pushButtonSuivant.setObjectName(_fromUtf8("pushButtonSuivant"))
+        self.gridLayout_2.addWidget(self.pushButtonSuivant, 0, 1, 1, 1)
+        self.pushButtonPrecedent = QtGui.QPushButton(self.widget)
+        self.pushButtonPrecedent.setObjectName(_fromUtf8("pushButtonPrecedent"))
+        self.gridLayout_2.addWidget(self.pushButtonPrecedent, 0, 0, 1, 1)
         self.horizontalLayout_2.addLayout(self.gridLayout_2)
         spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout_2.addItem(spacerItem1)
         self.mplvl.addWidget(self.widget)
 
-        self.retranslateUi(Form)
-        QtCore.QMetaObject.connectSlotsByName(Form)
+        self.retranslateUi(HistogramForme)
+        QtCore.QMetaObject.connectSlotsByName(HistogramForme)
 
-    def retranslateUi(self, Form):
-        Form.setWindowTitle(_translate("Form", "Form", None))
-        self.figureGroupBox.setTitle(_translate("Form", "Histogramme", None))
-        self.pushButton_2.setText(_translate("Form", "Suivant", None))
-        self.pushButton.setText(_translate("Form", "Precedent", None))
+    def retranslateUi(self, HistogramForme):
+        HistogramForme.setWindowTitle(_translate("HistogramForme", "Form", None))
+        self.figureGroupBox.setTitle(_translate("HistogramForme", "Histogramme", None))
+        self.pushButtonSuivant.setText(_translate("HistogramForme", "Suivant", None))
+        self.pushButtonPrecedent.setText(_translate("HistogramForme", "Precedent", None))
 

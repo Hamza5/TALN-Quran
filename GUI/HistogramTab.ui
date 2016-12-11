@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Form</class>
- <widget class="QWidget" name="Form">
+ <class>HistogramForme</class>
+ <widget class="QWidget" name="HistogramForme">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -62,8 +62,8 @@
       </item>
       <item>
        <layout class="QGridLayout" name="gridLayout_2">
-        <item row="0" column="0">
-         <widget class="QPushButton" name="pushButton_2">
+        <item row="0" column="1">
+         <widget class="QPushButton" name="pushButtonSuivant">
           <property name="text">
            <string>Suivant</string>
           </property>
@@ -72,8 +72,8 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="1">
-         <widget class="QPushButton" name="pushButton">
+        <item row="0" column="0">
+         <widget class="QPushButton" name="pushButtonPrecedent">
           <property name="text">
            <string>Precedent</string>
           </property>
