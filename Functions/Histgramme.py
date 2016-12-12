@@ -30,7 +30,7 @@ def index_ahkam(file_ahkam):
              ayate_dict.clear()     
      return ahkam_dict
          
-def histoplot(sourate,deb,fin,quran):
+def histoplot(sourate,deb,fin,quran, title):
     elements = []
     labels = []
     index_ahkam1 = index_ahkam("../ahkaam_encoding.txt")
@@ -62,8 +62,8 @@ def histoplot(sourate,deb,fin,quran):
     ax.bar(y_pos, performance, align='center', alpha=1)
     ax.set_label(performance)
     pl.xticks(y_pos, labels, rotation=30)
-    ax.set_xlabel('Elongation')
-    ax.set_title('Histogram')
+    ax.set_xlabel('Elongations')
+    ax.set_title(title)
     return figure
 
 if __name__ == '__main__':
