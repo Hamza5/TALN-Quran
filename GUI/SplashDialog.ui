@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SplashDialog</class>
+ <widget class="QDialog" name="SplashDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>472</width>
+    <height>291</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Projet TALN - Démarrage</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QGroupBox" name="quranicCorpusGroupBox">
+     <property name="title">
+      <string>Emplacement du corpus coranique</string>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QLineEdit" name="quranicCorpusPathLineEdit"/>
+      </item>
+      <item>
+       <widget class="QPushButton" name="quranicCorpusSelectPushButton">
+        <property name="text">
+         <string>Sélectionner</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="ahkaamEncodingGroupBox">
+     <property name="title">
+      <string>Emplacement du fichier d'encodage d'ahkaam</string>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <widget class="QLineEdit" name="ahkaamEncodingPathLineEdit"/>
+      </item>
+      <item>
+       <widget class="QPushButton" name="ahkaamEncodingSelectPushButton">
+        <property name="text">
+         <string>Sélectionner</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="launchPushButton">
+     <property name="text">
+      <string>Démarrer</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QProgressBar" name="loadingProgressBar">
+     <property name="locale">
+      <locale language="French" country="France"/>
+     </property>
+     <property name="value">
+      <number>0</number>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
