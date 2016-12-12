@@ -73,7 +73,7 @@ class Transliteration(QWidget, Ui_TransliterationTab):
             self.transliterationTextResultPlainTextEdit.setPlainText(self.convert_thread.result)
 
     def save(self):
-        path = QFileDialog.getSaveFileName(self)
+        path = QFileDialog.getSaveFileName(self, filter='Texte (*.txt)')
         if path:
             try:
                 with open(path, 'w', encoding='utf-8') as file:
@@ -82,7 +82,7 @@ class Transliteration(QWidget, Ui_TransliterationTab):
                 QMessageBox.critical(self, 'Projet TALN - Erreur', 'Impossible d\'écrir le fichier {} !'.format(err.filename))
 
     def select_file(self):
-        path = QFileDialog.getOpenFileName(self)
+        path = QFileDialog.getOpenFileName(self, filter='Texte (*.txt)')
         if path:
             self.transliterationSourceFileLineEdit.setText(path)
 

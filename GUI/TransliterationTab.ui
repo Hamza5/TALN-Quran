@@ -78,6 +78,9 @@
      <property name="text">
       <string>Convertir</string>
      </property>
+     <property name="default">
+      <bool>true</bool>
+     </property>
     </widget>
    </item>
    <item>

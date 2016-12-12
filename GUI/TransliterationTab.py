@@ -57,6 +57,7 @@ class Ui_TransliterationTab(object):
         self.verticalLayout.addWidget(self.transliterationSourceGroupBox)
         self.transliterationConvertPushButton = QtGui.QPushButton(TransliterationTab)
         self.transliterationConvertPushButton.setEnabled(False)
+        self.transliterationConvertPushButton.setDefault(True)
         self.transliterationConvertPushButton.setObjectName(_fromUtf8("transliterationConvertPushButton"))
         self.verticalLayout.addWidget(self.transliterationConvertPushButton)
         self.transliterationResultGroupBox = QtGui.QGroupBox(TransliterationTab)
