@@ -1,5 +1,5 @@
 from collections.abc import Iterable
-
+from os import stat
 from Functions.QuranTransliteration import transliterate_to_arabic, clear_diacritics_ascii, transliterate_to_ascii
 
 
@@ -435,16 +435,19 @@ class Word(Iterable):
         return transliterate_to_arabic(str(self))
 
 
-def parse_quranic_corpus(file_path):
+def parse_quranic_corpus(file_path, progress_function=lambda progress: None):
     try:
         quran = Quran()
         with open(file_path, encoding='utf-8', errors='ignore') as corpus_file:
+            bytes_read = 0
+            file_size = stat(file_path).st_size
             # Invalid Sourat, Ayat and Word. Used just to initialize.
             current_sourat = Sourat(0, quran)
             current_ayat = Ayat(0, current_sourat)
             current_word = Word(0, '', {'type': 'STEM'}, current_ayat)
             word_prefix = None
             for line in corpus_file:
+                line_size = len(line.encode())  # Number of bytes in this line
                 line = line.strip()
                 if not line.startswith('('):
                     continue  # Ignore any lines without data
@@ -484,6 +487,8 @@ def parse_quranic_corpus(file_path):
                     current_ayat += current_word
                 else:  # Found a suffix
                     current_word += word_part
+                bytes_read += line_size
+                progress_function(round(bytes_read/file_size*100))
         return quran
     except (IndexError, ValueError, TypeError) as e:
         raise SyntaxError('The syntax of the file is invalid') from e
