@@ -6,23 +6,78 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>599</width>
-    <height>386</height>
+    <width>689</width>
+    <height>440</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QVBoxLayout" name="mplvl">
-   <item alignment="Qt::AlignLeft|Qt::AlignBottom">
-    <widget class="QComboBox" name="comboBox">
-     <property name="minimumSize">
-      <size>
-       <width>581</width>
-       <height>0</height>
-      </size>
-     </property>
-    </widget>
+   <item>
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="2">
+      <widget class="QLineEdit" name="lineEdit_AyaDebut">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="placeholderText">
+        <string>Ayat</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="lineEditSouratDebut">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="placeholderText">
+        <string>Sourat</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="4">
+      <widget class="QLineEdit" name="lineEdit_SouratFin">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="placeholderText">
+        <string>Sourat</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="5">
+      <widget class="QLineEdit" name="lineEdit_AyaFin">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="placeholderText">
+        <string>Ayat</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QPushButton" name="ChoisirDebut">
+       <property name="text">
+        <string>de</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="3">
+      <widget class="QPushButton" name="pushButtonChoisirFin">
+       <property name="text">
+        <string>à</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="6">
+      <widget class="QPushButton" name="pushButtonGenerer">
+       <property name="text">
+        <string>Générer</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
    <item>
     <widget class="QGroupBox" name="figureGroupBox">
