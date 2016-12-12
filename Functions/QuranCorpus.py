@@ -537,14 +537,14 @@ def search_word(searched_word, quran, strict=False):
     return sorted(matches, key=lambda m: m[1], reverse=True)
 
 
-def concordance(searched_word, quran, words_around_count=5, strict=False):
+def concordance(searched_word, quran, words_before_count=5, words_after_count=5, strict=False):
     contexts = []
     indexes = []
     scores = []
     found_words = search_word(searched_word, quran, strict)
     for word, score in found_words:
         context = [word]
-        i = words_around_count
+        i = words_before_count
         previous_word = word.previous()
         while previous_word and i > 0:
             context.append(previous_word)
@@ -554,7 +554,7 @@ def concordance(searched_word, quran, words_around_count=5, strict=False):
         indexes.append(len(context) - 1)
         i = 0
         next_word = word.next()
-        while next_word and i < words_around_count:
+        while next_word and i < words_after_count:
             context.append(next_word)
             next_word = next_word.next()
             i += 1
@@ -563,8 +563,8 @@ def concordance(searched_word, quran, words_around_count=5, strict=False):
     return contexts, indexes, scores
 
 if __name__ == '__main__':
-    quran = parse_quranic_corpus('quranic-corpus-morphology-0.4.txt')
-    for sourat in quran[-50:]:
+    quran = parse_quranic_corpus('../quranic-corpus-morphology-0.4-last-14-sourats.txt')
+    for sourat in quran:
         for ayat in sourat:
             print(ayat.arabic_text())
         print()
@@ -574,7 +574,7 @@ if __name__ == '__main__':
         word_to_be_searched = transliterate_to_ascii(input('Search : '))
         if word_to_be_searched:
             print(word_to_be_searched)
-            contexts, indexes, scores = concordance(word_to_be_searched, quran)
+            contexts, indexes, scores = concordance(word_to_be_searched, quran, words_before_count=4, words_after_count=2)
             for context, index, score in zip(contexts, indexes, scores):
                 for i in range(len(context)):
                     if i == index:
