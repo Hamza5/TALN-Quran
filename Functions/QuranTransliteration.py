@@ -68,7 +68,8 @@ quran_buckwalter_scheme = {
     "+": "\u06EB",
     "%": "\u06EC",
     "]": "\u06ED",
-    ' ': ' '
+    ' ': ' ',
+    '\n': '\n'
 }
 quran_buckwalter_reversed_scheme = dict((v, k) for (k, v) in quran_buckwalter_scheme.items())
 
