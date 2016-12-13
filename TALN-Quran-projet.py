@@ -7,6 +7,8 @@ from Functions.Transliteration import Transliteration
 from Functions.Concordancer import Concordancer
 from Functions.QuranCorpus import Quran, parse_quranic_corpus
 from Functions.MadSim import index_ahkam
+from Functions.MadSimTab import Main as MadSim
+from Functions.custommpl import Main as Histogram
 
 
 class QuranicCorpusThread(QThread):
@@ -143,8 +145,12 @@ class MainWindow(QMainWindow):
         self.tabs = QTabWidget(self)
         transliteration_tab = Transliteration(quran, self)
         concordance_tab = Concordancer(quran, self)
+        madsim_tab = MadSim(quran, ahkaam)
+        histogram_tab = Histogram(quran, ahkaam)
         self.tabs.addTab(transliteration_tab, transliteration_tab.windowTitle())
         self.tabs.addTab(concordance_tab, concordance_tab.windowTitle())
+        self.tabs.addTab(madsim_tab, madsim_tab.windowTitle())
+        self.tabs.addTab(histogram_tab, histogram_tab.windowTitle())
         self.setCentralWidget(self.tabs)
         self.setWindowTitle('Projet TALN - ABBAD & ZEBOUCHI')
 
