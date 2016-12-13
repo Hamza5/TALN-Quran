@@ -1,16 +1,16 @@
-
-from Functions.QuranCorpus import parse_quranic_corpus
-
+import time
 def load(file):
     f = open(file, 'rU', encoding='utf-8')
     return f.read()
 
-def index_ahkam(file_ahkam):
+def index_ahkam(file_ahkam, progress_function=lambda progress:None):
      file = load(file_ahkam)
      spliedfile = file.split(")")
      ahkam_dict = dict()
      ayate_dict = dict()
      prev_sourat = 1
+     maximum = len(spliedfile)  # Added for progression
+     processed = 0
      for aya in spliedfile:
          if aya == "\n" or aya == "": 
              break
@@ -26,8 +26,11 @@ def index_ahkam(file_ahkam):
              ayate_dict.clear()
          if int(sourat_number) == 114 and int(aya_number) == 6: 
              ahkam_dict[int(sourat_number)]= ayate_dict.copy()
-             ayate_dict.clear()     
+             ayate_dict.clear()
+         processed += 1
+         progress_function(round(processed/maximum*100))
      return ahkam_dict
+
 def Mad_dist(mad_aya,mad_test):
     list_aya = list(map(int, mad_aya))
     list_test = list(map(int, mad_test))
@@ -65,6 +68,7 @@ def Madsim(mad_serie,quran,mad_encode):
 
 
 if __name__ == '__main__':
+    from Functions.QuranCorpus import parse_quranic_corpus
     quran= parse_quranic_corpus("../Quran/quranic-corpus-morphology-0.4.txt")
     list_ = Madsim("22121012210",quran,"ahkaam_encoding.txt")
     for elem in list_:
