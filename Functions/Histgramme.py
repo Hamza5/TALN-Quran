@@ -30,10 +30,10 @@ def index_ahkam(file_ahkam):
              ayate_dict.clear()     
      return ahkam_dict
          
-def histoplot(sourate,deb,fin,quran, title):
+def histoplot(sourate,deb,fin,quran, title, ahkamDict):
     elements = []
     labels = []
-    index_ahkam1 = index_ahkam("../ahkaam_encoding.txt")
+    index_ahkam1 =ahkamDict
     counts = {i: 0 for i in 'aiouA'}
     addedspace = 0;
     for ayat in range(deb, fin):
@@ -68,5 +68,6 @@ def histoplot(sourate,deb,fin,quran, title):
 
 if __name__ == '__main__':
     quran= parse_quranic_corpus("../quranic-corpus-morphology-0.4.txt")
-    histoplot(2, 2, 5, quran).show()
+    AhkIndex = index_ahkam("../ahkaam_encoding.txt")
+    histoplot(2, 2, 5, quran,AhkIndex ).show()
     

@@ -53,7 +53,7 @@ def Mad_dist(mad_aya,mad_test):
             dist_glob = dist
     return dist_glob
 def Madsim(mad_serie,quran,mad_encode):
-    index_ahkam1 = index_ahkam(mad_encode)
+    index_ahkam1 = mad_encode
     aya_sim = list()
     aya_found = 0
     for sourat, ayate in index_ahkam1.items():
@@ -66,6 +66,7 @@ def Madsim(mad_serie,quran,mad_encode):
 
 if __name__ == '__main__':
     quran= parse_quranic_corpus("../Quran/quranic-corpus-morphology-0.4.txt")
-    list_ = Madsim("22121012210",quran,"ahkaam_encoding.txt")
+    indexAhkm = index_ahkam("ahkaam_encoding.txt")
+    list_ = Madsim("22121012210",quran,indexAhkm)
     for elem in list_:
         print (elem.arabic_text())

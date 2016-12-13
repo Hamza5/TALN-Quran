@@ -3,7 +3,7 @@ from PyQt4.QtGui import QFileDialog
 from PyQt4.QtGui import QMessageBox
 from GUI.Chercher_Mad import Ui_Recherche_Q
 from Functions.MadSim import Madsim
-import io
+
 class Main(QWidget, Ui_Recherche_Q):
     def __init__(self,quran, ahkaam_encoding):
         super(Main, self).__init__()
@@ -26,18 +26,19 @@ class Main(QWidget, Ui_Recherche_Q):
     def buttonEnregClicked(self):
         path = QFileDialog.getSaveFileName(self, filter='Texte (*.txt)')
         text = self.RechercheQ_textEdit.toPlainText()
-        with io.open(path, 'w', encoding='utf8') as f:
+        with open(path, 'w', encoding='utf8') as f:
             f.write(text)
-            f.close()
 
 
 if __name__ == '__main__':
     import sys
     from PyQt4 import QtGui
+    from Functions.MadSim import index_ahkam
     app = QtGui.QApplication(sys.argv)
     from Functions.QuranCorpus import parse_quranic_corpus
     quran = parse_quranic_corpus("../quranic-corpus-morphology-0.4.txt")
-    main = Main(quran, "../ahkaam_encoding.txt")
+    indexAhkm = index_ahkam("../ahkaam_encoding.txt")
+    main = Main(quran, indexAhkm)
     main.show()
     sys.exit(app.exec_())
 
