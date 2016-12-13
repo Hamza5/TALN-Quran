@@ -21,6 +21,7 @@ class QuranicCorpusThread(QThread):
         self.error = None
 
     def run(self):
+        self.error = None
         splash_window = self.parent()
         assert isinstance(splash_window, Splash)
         try:
@@ -42,6 +43,7 @@ class AhkaamEncodingThread(QThread):
         self.error = None
 
     def run(self):
+        self.error = None
         splash_window = self.parent()
         assert isinstance(splash_window, Splash)
         try:

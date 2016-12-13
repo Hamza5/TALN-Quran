@@ -13,6 +13,7 @@ class ConvertThread(QThread):
         self.error = None
 
     def run(self):
+        self.error = None
         transliteration_tab = self.parent()
         assert isinstance(transliteration_tab, Transliteration)
         try:
@@ -68,19 +69,19 @@ class Transliteration(QWidget, Ui_TransliterationTab):
     def after_end(self):
         self.transliterationConvertPushButton.setText(self.button_old_text)
         self.transliterationConvertPushButton.setEnabled(True)
-        if not self.convert_thread.error:
-            self.transliterationTextResultPlainTextEdit.setPlainText(self.convert_thread.result)
-        else:
+        if self.convert_thread.error:
             err = self.convert_thread.error
             if isinstance(err, OSError):
                 QMessageBox.critical(self, 'Projet TALN - Erreur',
                                      'Impossible de lire le fichier {} !'.format(err.filename))
-            elif isinstance(err,(UnicodeError, IndexError)):
+            elif isinstance(err, (UnicodeError, IndexError)):
                 QMessageBox.critical(self, 'Projet TALN - Erreur',
                                      'Le fichier n\'est pas un fichier texte valide !')
             else:
                 QMessageBox.critical(self, 'Projet TALN - Erreur',
                                      'Vous avez saisi des caractères invalides !\nLes caractères autorisés sont les caractères coraniques arabes ou buckwalter.')
+        else:
+            self.transliterationTextResultPlainTextEdit.setPlainText(self.convert_thread.result)
 
     def save(self):
         path = QFileDialog.getSaveFileName(self, filter='Texte (*.txt)')
