@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'HistogramTab.ui'
 #
-# Created: Mon Dec 12 11:47:38 2016
+# Created: Tue Dec 13 13:53:06 2016
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -97,7 +97,7 @@ class Ui_HistogramForme(object):
         QtCore.QMetaObject.connectSlotsByName(HistogramForme)
 
     def retranslateUi(self, HistogramForme):
-        HistogramForme.setWindowTitle(_translate("HistogramForme", "Form", None))
+        HistogramForme.setWindowTitle(_translate("HistogramForme", "Hitogramme", None))
         self.lineEdit_AyaDebut.setPlaceholderText(_translate("HistogramForme", "Ayat", None))
         self.lineEditSouratDebut.setPlaceholderText(_translate("HistogramForme", "Sourat", None))
         self.lineEdit_SouratFin.setPlaceholderText(_translate("HistogramForme", "Sourat", None))

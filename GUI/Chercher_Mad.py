@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'Chercher_Mad.ui'
 #
-# Created: Sun Dec 11 12:54:49 2016
+# Created: Tue Dec 13 13:52:52 2016
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -60,7 +60,7 @@ class Ui_Recherche_Q(object):
         QtCore.QMetaObject.connectSlotsByName(Recherche_Q)
 
     def retranslateUi(self, Recherche_Q):
-        Recherche_Q.setWindowTitle(_translate("Recherche_Q", "Form", None))
+        Recherche_Q.setWindowTitle(_translate("Recherche_Q", "Elongations", None))
         self.lineEdit_RechercheQ.setPlaceholderText(_translate("Recherche_Q", "Veuillez entrer une serie de Moudoud a chercher", None))
         self.RechercheQ_RehBTN.setText(_translate("Recherche_Q", "Trouver", None))
         self.CherhcherMad_GRpBox.setTitle(_translate("Recherche_Q", "Resultat trouvé", None))
