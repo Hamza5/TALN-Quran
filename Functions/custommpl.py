@@ -9,12 +9,13 @@ from Functions.QuranCorpus import parse_quranic_corpus
 from Functions.Selector import Selector
 from PyQt4.QtGui import QMessageBox
 class Main(QWidget, Ui_HistogramForme):
-    def __init__(self , quran):
+    def __init__(self , quran ,AhkIndex):
         super(Main, self).__init__()
         self.setupUi(self)
         self.fig_dict = {}
         self.quran = quran
-        self.addmpl(histoplot(0, 0, 0, quran, "Histogramme"))
+        self.ahkamIndex = AhkIndex
+        self.addmpl(histoplot(0, 0, 0, quran, "Histogramme",self.ahkamIndex))
         self.pushButtonChoisirFin.setEnabled(False)
         self.ChoisirDebut.clicked.connect(self.choisirDebutFunc)
         self.pushButtonChoisirFin.clicked.connect(self.choisirFinFunc)
@@ -38,8 +39,7 @@ class Main(QWidget, Ui_HistogramForme):
         self.s = Selector(self.quran)
         if self.s.exec_() == QtGui.QDialog.Accepted:
             self.pushButtonChoisirFin.setEnabled(True)
-            self.souratDebut = self.s.souratComboBox.currentIndex() + 1
-            self.ayaDebut = self.s.ayatComboBox.currentIndex() + 1
+            self.souratDebut,self.ayaDebut, mot = self.s.selection()
             self.lineEditSouratDebut.setText(str(self.souratDebut))
             self.lineEdit_AyaDebut.setText(str(self.ayaDebut))
     def choisirFinFunc(self):
@@ -47,16 +47,18 @@ class Main(QWidget, Ui_HistogramForme):
         self.sel.souratComboBox.setEnabled(False)
         self.sel.souratComboBox.setCurrentIndex(self.s.souratComboBox.currentIndex())
         if self.sel.exec_() == QtGui.QDialog.Accepted:
-            self.souratFin = self.sel.souratComboBox.currentIndex() +1
-            self.ayaFin = self.sel.ayatComboBox.currentIndex() + 1
+            self.souratFin, self.ayaFin, mot = self.sel.selection()
             self.lineEdit_SouratFin.setText(str(self.souratFin))
             self.lineEdit_AyaFin.setText(str(self.ayaFin))
     def redrow(self, sourat, ayadeb, ayafin, title):
-        self.canvas = FigureCanvas(histoplot(sourat, ayadeb, ayafin, self.quran, title))
-        self.canvas.draw()
+        self.canvas = FigureCanvas(histoplot(sourat, ayadeb, ayafin, self.quran, title,self.ahkamIndex))
         for i in reversed(range(self.figureGroupBox.layout().count())):
             self.figureGroupBox.layout().itemAt(i).widget().setParent(None)
         self.figureGroupBox.layout().addWidget(self.canvas)
+        self.canvas.draw()
+        self.toolbar = NavigationToolbar(self.canvas,
+                                         self.figureGroupBox, coordinates=True)
+        self.figureGroupBox.layout().addWidget(self.toolbar)
     def titles(self, sourat, aya1, aya2):
         return "Histogramme :"+str(sourat)+" ["+str(aya1)+", "+str(aya2)+"]"
     def pushButtonGenererFunc(self):
@@ -97,14 +99,14 @@ if __name__ == '__main__':
     import sys
     from PyQt4 import QtGui
     import numpy as np
-
+    from Functions.Histgramme import index_ahkam
     fig1 = Figure()
     ax1f1 = fig1.add_subplot(111)
     ax1f1.plot(np.random.rand(5))
 
     quran = parse_quranic_corpus("../quranic-corpus-morphology-0.4.txt")
-
+    AhkIndex = index_ahkam("../ahkaam_encoding.txt")
     app = QtGui.QApplication(sys.argv)
-    main = Main(quran)
+    main = Main(quran ,AhkIndex)
     main.show()
     sys.exit(app.exec_())
