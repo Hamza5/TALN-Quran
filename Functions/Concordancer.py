@@ -15,9 +15,12 @@ class SearchThread(QThread):
         if word[0] in quran_buckwalter_scheme.values():
             word = transliterate_to_ascii(word)
         strict = concordance_tab.concordanceStrictSearchCheckBox.isChecked()
+        basic = concordance_tab.concordanceSourceBasicSearchTypeCheckBox.isChecked()
+        lemme = concordance_tab.concordanceSourceLemmeSearchTypeCheckBox.isChecked()
+        root = concordance_tab.concordanceSourceRootSearchTypeCheckBox.isChecked()
         words_before = concordance_tab.concordanceSourceWordsBeforeSpinBox.value()
         words_after = concordance_tab.concordanceSourceWordsAfterSpinBox.value()
-        self.results = concordance(word, concordance_tab.quran, words_before, words_after, strict)
+        self.results = concordance(word, concordance_tab.quran, words_before, words_after, strict, basic, lemme, root)
 
 
 class Concordancer(QWidget, Ui_ConcordanceTab):
@@ -39,6 +42,8 @@ class Concordancer(QWidget, Ui_ConcordanceTab):
 
     def select_quran_word(self):
         selection_dialog = Selector(self.quran, parent=self)
+        selection_dialog.wordCheckBox.setEnabled(False)
+        selection_dialog.ayatCheckBox.setEnabled(False)
         if selection_dialog.exec() == selection_dialog.Accepted:
             sourat, ayat, word = selection_dialog.selection()
             self.concordanceSourceLineEdit.setText(self.quran[sourat][ayat][word].arabic_text())
