@@ -514,29 +514,29 @@ def search_word(searched_word, quran, strict=False):
                 word_stem_nd = clear_diacritics_ascii(word_stem)
                 word_suffix_nd = clear_diacritics_ascii(word_suffix)
                 word_lemme_nd = clear_diacritics_ascii(word_lemme)
-                if word_prefix and searched_word.startswith(word_prefix) and word_stem and searched_word[len(word_prefix):].startswith(word_stem):
-                    score = 4
-                    if word_suffix and searched_word[len(word_prefix)+len(word_stem):] == word_suffix:
-                        score += 1
-                elif word_stem and searched_word.startswith(word_stem):
-                    score = 3
-                    if word_suffix and searched_word[len(word_stem):] == word_suffix:
-                        score += 1
+                if word_prefix and searched_word.startswith(word_prefix) and word_stem and searched_word[len(word_prefix):].startswith(word_stem) and word_suffix and searched_word[len(word_prefix)+len(word_stem):] == word_suffix:
+                    score = 4  # Found a prefix+stem+suffix
+                elif word_prefix and searched_word.startswith(word_prefix) and word_stem and searched_word[len(word_prefix):] == word_stem:
+                    score = 4  # Found a prefix+stem
+                elif word_stem and searched_word.startswith(word_stem) and word_suffix and searched_word[len(word_stem):] == word_suffix:
+                    score = 4  # Found a stem+suffix
+                elif word_stem and searched_word == word_stem:
+                    score = 3  # Found a stem
                 elif word_lemme and searched_word == word_lemme:
-                    score = 2
+                    score = 2  # Found a lemme
                 elif word_root and searched_word == word_root:
-                    score = 1
-                elif not strict:  # No diacritics
-                    if word_prefix_nd and searched_word_nd.startswith(word_prefix_nd) and word_stem_nd and searched_word_nd[len(word_prefix_nd):].startswith(word_stem_nd):
-                        score = 4
-                        if word_suffix_nd and searched_word_nd[len(word_prefix_nd)+len(word_stem_nd):] == word_suffix_nd:
-                            score += 1
-                    elif word_stem_nd and searched_word_nd.startswith(word_stem_nd):
-                        score = 3
-                        if word_suffix_nd and searched_word_nd[len(word_stem_nd):] == word_suffix_nd:
-                            score += 1
+                    score = 1  # Found a root
+                elif not strict:  # No diacritics, apply the same rules again except for the root because it is already without diacritics
+                    if word_prefix_nd and searched_word_nd.startswith(word_prefix_nd) and word_stem_nd and searched_word_nd[len(word_prefix_nd):].startswith(word_stem_nd) and word_suffix_nd and searched_word_nd[len(word_prefix_nd) + len(word_stem_nd):] == word_suffix_nd:
+                        score = 4  # Found a prefix+stem+suffix
+                    elif word_prefix_nd and searched_word_nd.startswith(word_prefix_nd) and word_stem_nd and searched_word_nd[len(word_prefix_nd):] == word_stem_nd:
+                        score = 4  # Found a prefix+stem
+                    elif word_stem_nd and searched_word_nd.startswith(word_stem_nd) and word_suffix_nd and searched_word_nd[len(word_stem_nd):] == word_suffix_nd:
+                        score = 4  # Found a stem+suffix
+                    elif word_stem_nd and searched_word_nd == word_stem_nd:
+                        score = 3  # Found a stem
                     elif word_lemme_nd and searched_word_nd == word_lemme_nd:
-                        score = 2
+                        score = 2  # Found a lemme
                 if score > 0:
                     matches.append((word, score))
     return sorted(matches, key=lambda m: m[1], reverse=True)
@@ -568,11 +568,11 @@ def concordance(searched_word, quran, words_before_count=5, words_after_count=5,
     return contexts, indexes, scores
 
 if __name__ == '__main__':
-    quran = parse_quranic_corpus('../quranic-corpus-morphology-0.4-last-14-sourats.txt')
-    for sourat in quran:
-        for ayat in sourat:
-            print(ayat.arabic_text())
-        print()
+    quran = parse_quranic_corpus('../quranic-corpus-morphology-0.4.txt')
+    # for sourat in quran:
+    #     for ayat in sourat:
+    #         print(ayat.arabic_text())
+    #     print()
 
     word_to_be_searched = True
     while word_to_be_searched:
