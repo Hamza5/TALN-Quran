@@ -37,7 +37,7 @@ class Main(QWidget, Ui_HistogramForme):
         self.figureGroupBox.layout().addWidget(self.toolbar)
     def choisirDebutFunc(self):
         self.s = Selector(self.quran)
-        if self.s.exec_() == QtGui.QDialog.Accepted:
+        if self.s.exec_() == self.s.Accepted:
             self.pushButtonChoisirFin.setEnabled(True)
             self.souratDebut,self.ayaDebut, mot = self.s.selection()
             self.lineEditSouratDebut.setText(str(self.souratDebut))
@@ -46,7 +46,7 @@ class Main(QWidget, Ui_HistogramForme):
         self.sel = Selector(self.quran)
         self.sel.souratComboBox.setEnabled(False)
         self.sel.souratComboBox.setCurrentIndex(self.s.souratComboBox.currentIndex())
-        if self.sel.exec_() == QtGui.QDialog.Accepted:
+        if self.sel.exec_() == self.sel.Accepted:
             self.souratFin, self.ayaFin, mot = self.sel.selection()
             self.lineEdit_SouratFin.setText(str(self.souratFin))
             self.lineEdit_AyaFin.setText(str(self.ayaFin))
