@@ -1,4 +1,4 @@
-from PyQt4.QtGui import QWidget, QMessageBox, QFileDialog
+from PyQt4.QtGui import QWidget, QMessageBox, QFileDialog, QColorDialog, QPalette, QColor
 from PyQt4.QtCore import QThread
 from GUI.ConcordanceTab import Ui_ConcordanceTab
 from Functions.Selector import Selector
@@ -31,10 +31,14 @@ class Concordancer(QWidget, Ui_ConcordanceTab):
         self.quran = quran
         self.search_thread = SearchThread(self)
         self.search_button_old_text = self.concordanceSearchPushButton.text()
+        self.highlight_text_color = self.palette().color(QPalette.HighlightedText)
+        self.highlight_background_color = self.palette().color(QPalette.Highlight)
 
         self.concordanceSourceSelectPushButton.clicked.connect(self.select_quran_word)
         self.concordanceSourceLineEdit.textChanged.connect(lambda: self.concordanceSearchPushButton.setEnabled(bool(self.concordanceSourceLineEdit.text())))
         self.concordanceResultsSavePushButton.clicked.connect(self.save)
+        self.concordanceSourceFontColorPushButton.clicked.connect(self.select_font_color)
+        self.concordanceSourceBackgroundColorPushButton.clicked.connect(self.select_highlight_color)
 
         self.concordanceSearchPushButton.clicked.connect(self.search)
         self.search_thread.started.connect(self.before_start)
@@ -83,14 +87,14 @@ class Concordancer(QWidget, Ui_ConcordanceTab):
                                         direction : rtl;
                                     }
                                     em {
-                                        background-color : rgb(20%, 40%, 100%);
-                                        color : rgb(10%, 10%, 40%);
+                                        background-color : %s;
+                                        color : %s;
                                     }
                                 </style>
                             </head>
                             <body>
                                 <ol>
-                    '''
+                    ''' % (self.highlight_background_color.name(), self.highlight_text_color.name())
         contexts, indexes, scores = self.search_thread.results
         for context, index, score in zip(contexts, indexes, scores):
             displayed_content += '<li>{} '.format(context[index].location()[:-1])
@@ -123,6 +127,21 @@ class Concordancer(QWidget, Ui_ConcordanceTab):
             except OSError as err:
                 QMessageBox.critical(self, 'Projet TALN - Erreur',
                                      'Impossible d\'écrir le fichier {} !'.format(err.filename))
+
+    def select_font_color(self):
+        color = QColorDialog.getColor(self.highlight_text_color, self, "Sélectionner une couleur")
+        assert isinstance(color, QColor)
+        if color.isValid():
+            self.highlight_text_color = color
+            self.concordanceSourceFontColorPushButton.setStyleSheet('QWidget { color : %s; background-color : %s;}' % (color.name(), color.lighter().name()))
+
+    def select_highlight_color(self):
+        color = QColorDialog.getColor(self.highlight_background_color, self, "Sélectionner une couleur")
+        assert isinstance(color, QColor)
+        if color.isValid():
+            self.highlight_background_color = color
+            self.concordanceSourceBackgroundColorPushButton.setStyleSheet('QWidget { background-color : %s; color : %s;}' % (color.name(), color.darker().name()))
+
 
 if __name__ == '__main__':
     from PyQt4.QtGui import QApplication

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>694</width>
-    <height>589</height>
+    <width>781</width>
+    <height>596</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -22,67 +22,8 @@
      <property name="title">
       <string>Recherche d'un mot</string>
      </property>
-     <layout class="QGridLayout" name="gridLayout">
-      <item row="2" column="0">
-       <widget class="QLabel" name="concordanceSourceWordsBeforeLabel">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Nombre de mots avant</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="3">
-       <widget class="QSpinBox" name="concordanceSourceWordsAfterSpinBox">
-        <property name="minimum">
-         <number>0</number>
-        </property>
-        <property name="maximum">
-         <number>20</number>
-        </property>
-        <property name="value">
-         <number>3</number>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="2">
-       <widget class="QLabel" name="concordanceSourceWordsAfterLabel">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Nombre de mots après</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QSpinBox" name="concordanceSourceWordsBeforeSpinBox">
-        <property name="minimum">
-         <number>0</number>
-        </property>
-        <property name="maximum">
-         <number>20</number>
-        </property>
-        <property name="value">
-         <number>3</number>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0" colspan="3">
-       <widget class="QLineEdit" name="concordanceSourceLineEdit">
-        <property name="placeholderText">
-         <string>Votre mot</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="3">
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="1">
        <widget class="QPushButton" name="concordanceSourceSelectPushButton">
         <property name="text">
          <string>Sélectionner</string>
@@ -92,7 +33,115 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="0" colspan="4">
+      <item row="0" column="0">
+       <widget class="QLineEdit" name="concordanceSourceLineEdit">
+        <property name="placeholderText">
+         <string>Votre mot</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0" colspan="2">
+       <widget class="QGroupBox" name="concordanceSourceDisplayParametersGroupBox">
+        <property name="title">
+         <string>Paramètres d'affichage</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout">
+         <item row="0" column="2">
+          <widget class="QLabel" name="concordanceSourceWordsAfterLabel">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Nombre de mots après</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QSpinBox" name="concordanceSourceWordsBeforeSpinBox">
+           <property name="minimum">
+            <number>0</number>
+           </property>
+           <property name="maximum">
+            <number>20</number>
+           </property>
+           <property name="value">
+            <number>3</number>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="concordanceSourceWordsBeforeLabel">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Nombre de mots avant</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="3">
+          <widget class="QSpinBox" name="concordanceSourceWordsAfterSpinBox">
+           <property name="minimum">
+            <number>0</number>
+           </property>
+           <property name="maximum">
+            <number>20</number>
+           </property>
+           <property name="value">
+            <number>3</number>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="concordanceSourceFontColorLabel">
+           <property name="text">
+            <string>Couleur du texte</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="2">
+          <widget class="QLabel" name="concordanceSourceBackgroundColorLabel">
+           <property name="text">
+            <string>Couleur du marquage</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QPushButton" name="concordanceSourceFontColorPushButton">
+           <property name="text">
+            <string>Sélectionner</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="3">
+          <widget class="QPushButton" name="concordanceSourceBackgroundColorPushButton">
+           <property name="text">
+            <string>Sélectionner</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+        <zorder>concordanceSourceWordsAfterSpinBox</zorder>
+        <zorder>concordanceSourceWordsBeforeSpinBox</zorder>
+        <zorder>concordanceSourceWordsBeforeLabel</zorder>
+        <zorder>concordanceSourceWordsAfterLabel</zorder>
+        <zorder>concordanceSourceWordsAfterSpinBox</zorder>
+        <zorder>concordanceSourceWordsBeforeSpinBox</zorder>
+        <zorder>concordanceSourceWordsBeforeLabel</zorder>
+        <zorder>concordanceSourceWordsAfterLabel</zorder>
+        <zorder>concordanceSourceFontColorLabel</zorder>
+        <zorder>concordanceSourceBackgroundColorLabel</zorder>
+        <zorder>concordanceSourceFontColorPushButton</zorder>
+        <zorder>concordanceSourceBackgroundColorPushButton</zorder>
+       </widget>
+      </item>
+      <item row="2" column="0" colspan="2">
        <widget class="QGroupBox" name="concordanceSourceSearchTypesGroupBox">
         <property name="title">
          <string>Types de recherche</string>
