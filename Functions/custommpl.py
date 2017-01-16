@@ -68,9 +68,11 @@ class Main(QWidget, Ui_HistogramForme):
             QMessageBox.critical(self, "Erreur", "Il faut respecter l'ordre de Ayat")
         else:
             self.AyaCourant = self.ayaDebut
-            if self.AyaCourant+3 < self.ayaFin:
-                self.redrow(self.souratDebut, self.AyaCourant, self.AyaCourant + 3,self.titles(self.souratDebut,self.AyaCourant,self.AyaCourant + 3))
+            if self.AyaCourant+2 < self.ayaFin:
+                self.redrow(self.souratDebut, self.AyaCourant, self.AyaCourant + 2,self.titles(self.souratDebut,self.AyaCourant,self.AyaCourant + 2))
                 self.AyaCourant = + 3
+                self.pushButtonSuivant.setEnabled(True)
+                self.pushButtonPrecedent.setEnabled(True)
             else :
                 self.pushButtonSuivant.setEnabled(False)
                 self.pushButtonPrecedent.setEnabled(False)
@@ -78,10 +80,12 @@ class Main(QWidget, Ui_HistogramForme):
                 self.AyaCourant = self.ayaFin
 
     def pushButtonSuivantFunc(self):
-        if self.AyaCourant + 3 < self.ayaFin:
-            self.redrow(self.souratDebut, self.AyaCourant, self.AyaCourant + 3,self.titles(self.souratDebut,self.AyaCourant,self.AyaCourant+3))
+        if self.AyaCourant + 2 < self.ayaFin:
+            self.redrow(self.souratDebut, self.AyaCourant, self.AyaCourant + 2,self.titles(self.souratDebut,self.AyaCourant,self.AyaCourant+2))
             self.AyaCourant += 3
+            self.pushButtonPrecedent.setEnabled(True)
         else :
+            self.pushButtonPrecedent.setEnabled(True)
             self.pushButtonSuivant.setEnabled(False)
             self.redrow(self.souratDebut, self.AyaCourant, self.ayaFin, self.titles(self.souratDebut, self.AyaCourant, self.ayaFin))
             self.AyaCourant = self.ayaFin
@@ -92,8 +96,8 @@ class Main(QWidget, Ui_HistogramForme):
             self.pushButtonSuivant.setEnabled(True)
         else:
             self.pushButtonPrecedent.setEnabled(False)
-            self.redrow(self.souratDebut, 0, self.AyaCourant , self.titles(self.souratDebut,1,self.AyaCourant))
-            self.AyaCourant = 0
+            # self.redrow(self.souratDebut, 0, self.AyaCourant , self.titles(self.souratDebut,1,self.AyaCourant))
+            self.AyaCourant = 1
 
 if __name__ == '__main__':
     import sys
