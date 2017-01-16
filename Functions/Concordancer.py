@@ -90,27 +90,33 @@ class Concordancer(QWidget, Ui_ConcordanceTab):
                                         background-color : %s;
                                         color : %s;
                                     }
+                                    p {
+                                        font-style : italic;
+                                    }
                                 </style>
                             </head>
                             <body>
-                                <ol>
                     ''' % (self.highlight_background_color.name(), self.highlight_text_color.name())
         contexts, indexes, scores = self.search_thread.results
-        for context, index, score in zip(contexts, indexes, scores):
-            displayed_content += '<li>{} '.format(context[index].location()[:-1])
-            last_ayat = context[0].location()[1]
-            for i in range(len(context)):
-                current_ayat = context[i].location()[1]
-                if last_ayat != current_ayat:
-                    displayed_content += '[{}] '.format(last_ayat)
-                    last_ayat = current_ayat
-                if i == index:
-                    displayed_content += '<em>{}</em> '.format(context[i].arabic_text())
-                else:
-                    displayed_content += '{} '.format(context[i].arabic_text())
-            displayed_content += '</li>'
+        if len(contexts):
+            displayed_content += '<ol>'
+            for context, index, score in zip(contexts, indexes, scores):
+                displayed_content += '<li>{} '.format(context[index].location()[:-1])
+                last_ayat = context[0].location()[1]
+                for i in range(len(context)):
+                    current_ayat = context[i].location()[1]
+                    if last_ayat != current_ayat:
+                        displayed_content += '[{}] '.format(last_ayat)
+                        last_ayat = current_ayat
+                    if i == index:
+                        displayed_content += '<em>{}</em> '.format(context[i].arabic_text())
+                    else:
+                        displayed_content += '{} '.format(context[i].arabic_text())
+                displayed_content += '</li>'
+            displayed_content += '</ol>'
+        else:
+            displayed_content += '<p>Aucun résultat trouvé !</p>'
         displayed_content += '''
-                                </ol>
                             </body>
                         </html>
                     '''
